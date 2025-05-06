@@ -1,4 +1,4 @@
 # ignore everything except JavaScript_Code subfolder
 *
-!JavaScript_Code/
-!JavaScript_Code/**
+!Qualtrics/
+!Qualtrics/**
