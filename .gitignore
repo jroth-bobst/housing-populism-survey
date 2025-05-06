@@ -1,22 +1,4 @@
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-
-
-# macOS specific files
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Thumbnails and system files
-._*
-
-# Ignore RStudio project file
-*.Rproj
-
-# Ignore environment files (e.g., .env)
-*.env
-
-# Ignore log files
-*.log
+# ignore everything except JavaScript_Code subfolder
+*
+!JavaScript_Code/
+!JavaScript_Code/**
