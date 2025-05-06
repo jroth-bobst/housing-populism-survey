@@ -150,7 +150,7 @@ if (
     // second, it can't be the statement used for (pair 4 - candidate 1)
     options_candidate_5_1 = remove(options_candidate_5_1, [candidate_4_2]);
     console.log("After 5_2 theme and 4_1 question Removal: ", options_candidate_5_1);
-    // i think that's it -- now we can sample candidate_5_1 from the eligible options
+    // i think that's it -- now we can sample candidate_5_2 from the eligible options
     candidate_5_1 = sample(options_candidate_5_1);
     console.log("Pair 5 candidate 1 ", candidate_5_1);
 } else {
