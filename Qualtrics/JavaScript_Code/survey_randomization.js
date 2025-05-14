@@ -1,7 +1,6 @@
 Qualtrics.SurveyEngine.addOnload(function() {
     // Log to indicate the script is starting
     console.log("Starting script...");
-    console.log("Using updated version of the script.");
 	
 	// Initialize indicator of whether we are reversing the comparison order (for the five scenarios starting with different/different, it was easier to code the constraints for the reverse scenario (i.e. ending with different/different))
 	let mark_reverse = false;
@@ -135,9 +134,7 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	
 	// ** Pair 2 Logic **
     let remaining_pool = remove(all_statements, used_profiles);  // Remove used profiles from the pool
-
     let candidate_2_1, candidate_2_2;
-
     if (comparisons[1] === "same") {
         // Eliminate the prefixes used in previous pair (Pair 1)
         let prev_prefixes = [getPrefix(candidate_1_1), getPrefix(candidate_1_2)];
@@ -164,8 +161,6 @@ Qualtrics.SurveyEngine.addOnload(function() {
         console.log("Candidate 2_1 and Candidate 2_2 (different):", candidate_2_1, candidate_2_2);
         used_profiles.push(candidate_2_1, candidate_2_2);
     }
-	
-	
 	
 	// ** Pair 3 Logic **
     // Remaining pool is updated after Pair 1 and Pair 2
@@ -205,9 +200,9 @@ Qualtrics.SurveyEngine.addOnload(function() {
         used_profiles.push(candidate_3_1, candidate_3_2);
     }
 	
-	// Pair 4 logic
-	console.log("Starting Pair 4...");
-
+	
+	
+	// Pair 4 
 	let required_statements = remove(all_statements, used_profiles);
 	let profile_counts = used_profiles.reduce((acc, curr) => {
 	  acc[curr] = (acc[curr] || 0) + 1;
@@ -242,24 +237,23 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	  }
 
 	  let chosen_prefix = sample(available_prefixes);
-	  let chosen_statements = [chosen_prefix + "_A", chosen_prefix + "_B"];
+	  let chosen_statements = [chosen_prefix + "_A", chosen_prefix + "_B"]; // TODO RANDOMIZE THIS ORDER SO IT IS NOT ALWAYS A,B
 	  candidate_4_1 = chosen_statements[0];
 	  candidate_4_2 = chosen_statements[1];
 
 	  console.log("Candidate 4 (same):", candidate_4_1, candidate_4_2);
 	} else {
 	  let pool = intersect(required_statements, available_statements);
-
 	  if (comparisons[4] == "same") {
-		let pool_prefixes = pool.map(item => substr(item, 0, 1));
-		let prefix_pairs = Object.keys(pool_prefixes).filter(prefix =>
-		  pool_prefixes.filter(p => p === prefix).length > 1
-		);
-		let eliminate_statements = prefix_pairs.flatMap(prefix =>
-		  [prefix + "_A", prefix + "_B"]
-		);
-		pool = remove(pool, eliminate_statements);
-		available_statements = remove(available_statements, eliminate_statements);
+  		let pool_prefixes = pool.map(item => substr(item, 0, 1));
+  		let prefix_pairs = Object.keys(pool_prefixes).filter(prefix =>
+  		  pool_prefixes.filter(p => p === prefix).length > 1
+  		);
+  		let eliminate_statements = prefix_pairs.flatMap(prefix =>
+  		  [prefix + "_A", prefix + "_B"]
+  		);
+  		pool = remove(pool, eliminate_statements);
+  		available_statements = remove(available_statements, eliminate_statements);
 	  }
 
 	  if (pool.length > 0) {
@@ -275,17 +269,16 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	  );
 
 	  let pool2 = intersect(remaining_options, required_statements);
-
 	  if (comparisons[4] == "same") {
-		let pool2_prefixes = pool2.map(item => substr(item, 0, 1));
-		let prefix_pairs = Object.keys(pool2_prefixes).filter(prefix =>
-		  pool2_prefixes.filter(p => p === prefix).length > 1
-		);
-		let eliminate_statements = prefix_pairs.flatMap(prefix =>
-		  [prefix + "_A", prefix + "_B"]
-		);
-		pool2 = remove(pool2, eliminate_statements);
-		remaining_options = remove(remaining_options, eliminate_statements);
+  		let pool2_prefixes = pool2.map(item => substr(item, 0, 1));
+  		let prefix_pairs = Object.keys(pool2_prefixes).filter(prefix =>
+  		  pool2_prefixes.filter(p => p === prefix).length > 1
+  		);
+  		let eliminate_statements = prefix_pairs.flatMap(prefix =>
+  		  [prefix + "_A", prefix + "_B"]
+  		);
+  		pool2 = remove(pool2, eliminate_statements);
+  		remaining_options = remove(remaining_options, eliminate_statements);
 	  }
 
 	  if (pool2.length > 0) {
@@ -299,97 +292,70 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	
 	used_profiles = used_profiles.concat([candidate_4_1, candidate_4_2]);
 	
-	// Pair 5
 	
+  // PAIR 5
 	try {
-		console.log("Starting Pair 5...");
-
 		// Determine which statements are still required (i.e., have not yet appeared)
 		let required_statements = all_statements.filter(statement => !used_profiles.includes(statement));
-		console.log("Required statements:", required_statements);
 
 		// Eliminate any that have been used twice already
 		let available_statements = all_statements.filter(statement => {
 			return used_profiles.filter(x => x === statement).length <= 1;
 		});
-		console.log("Available statements:", available_statements);
 
 		// Also avoid repeating pair 4 profiles
 		available_statements = available_statements.filter(statement => ![candidate_4_1, candidate_4_2].includes(statement));
-		console.log("Available statements after removing pair 4 profiles:", available_statements);
 
 		if (comparisons[4] === "same") {
-			console.log("Comparisons[4] is 'same', filtering available prefixes...");
-
 			// Only keep prefixes that appear twice (to allow both A and B)
 			let available_prefixes = available_statements.map(statement => statement.substr(0, 1));
-			console.log("Available prefixes:", available_prefixes);
 
 			available_prefixes = available_prefixes.filter((value, index, self) => self.indexOf(value) !== index);
-			console.log("Filtered available prefixes:", available_prefixes);
-
 			// Filter to required prefixes if any required statements are left
 			if (required_statements.length > 0) {
 				let required_prefixes = required_statements.map(statement => statement.substr(0, 1));
 				available_prefixes = available_prefixes.filter(prefix => required_prefixes.includes(prefix));
-				console.log("Available prefixes after filtering with required prefixes:", available_prefixes);
 			}
 
 			// Choose a random prefix
 			let chosen_prefix = available_prefixes[Math.floor(Math.random() * available_prefixes.length)];
-			console.log("Chosen prefix:", chosen_prefix);
-
 			let chosen_statements = [
 				chosen_prefix + "_A", 
 				chosen_prefix + "_B"
 			];
-			console.log("Chosen statements:", chosen_statements);
-
 			candidate_5_1 = chosen_statements[0];
 			candidate_5_2 = chosen_statements[1];
-			console.log("Chosen candidate_5_1:", candidate_5_1);
-			console.log("Chosen candidate_5_2:", candidate_5_2);
-
 		} else {
-			console.log("Comparisons[4] is not 'same', selecting from available statements...");
-
 			// Ensure we include any required statements if available
 			let pool = required_statements.filter(statement => available_statements.includes(statement));
-			console.log("Pool of required statements:", pool);
-
 			if (pool.length > 0) {
 				candidate_5_1 = pool[Math.floor(Math.random() * pool.length)];
 			} else {
 				candidate_5_1 = available_statements[Math.floor(Math.random() * available_statements.length)];
 			}
-			console.log("Chosen candidate_5_1:", candidate_5_1);
 
 			let prefix_5 = candidate_5_1.substr(0, 1);
 			let remaining_options = available_statements.filter(statement => statement.substr(0, 1) !== prefix_5 && statement !== candidate_5_1);
-			console.log("Remaining options for candidate_5_2:", remaining_options);
 
 			// Select from required statements if applicable
 			let pool2 = remaining_options.filter(statement => required_statements.includes(statement));
-			console.log("Pool of required statements for candidate_5_2:", pool2);
-
 			if (pool2.length > 0) {
 				candidate_5_2 = pool2[Math.floor(Math.random() * pool2.length)];
 			} else {
 				candidate_5_2 = remaining_options[Math.floor(Math.random() * remaining_options.length)];
 			}
-			console.log("Chosen candidate_5_2:", candidate_5_2);
 		}
 
 		// Update used profiles
 		used_profiles = used_profiles.concat([candidate_5_1, candidate_5_2]);
-		console.log("Updated used profiles:", used_profiles);
 
 	} catch (error) {
-		console.log("did we get here?")
+		console.log("catch secction for Pair 5")
 		console.error("Error in Pair 5 logic:", error);
-		 console.trace();  
-		throw error;
+		console.trace();  
 	}
+	console.log("Chosen candidate_5_1:", candidate_5_1);
+	console.log("Chosen candidate_5_2:", candidate_5_2);
 	
 	 // reversing candidate order in scenarios that started with different/different/*
 	if (mark_reverse) {
@@ -477,6 +443,7 @@ Qualtrics.SurveyEngine.addOnload(function() {
   var fullTextC5_2 = Qualtrics.SurveyEngine.getEmbeddedData(full_candidate_5_2 + "_Text");
 
   // Store the full text in embedded data
+  Qualtrics.SurveyEngine.setEmbeddedData("comparison", comparisons); // just for debugging step
   Qualtrics.SurveyEngine.setEmbeddedData("FullTextC1_1", fullTextC1_1);
   Qualtrics.SurveyEngine.setEmbeddedData("FullTextC1_2", fullTextC1_2);
   Qualtrics.SurveyEngine.setEmbeddedData("FullTextC2_1", fullTextC2_1);
