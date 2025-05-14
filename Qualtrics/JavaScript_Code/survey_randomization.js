@@ -25,9 +25,18 @@ Qualtrics.SurveyEngine.addOnload(function() {
         }
         return array;
     }
-	function intersect(arr1, arr2) {
-  		return arr1.filter(item => arr2.includes(item));
-	}
+  function intersect(arr1, arr2) {
+      let countMap = new Map();
+      arr2.forEach(item => countMap.set(item, (countMap.get(item) || 0) + 1));
+      return arr1.filter(item => {
+          if (countMap.get(item) > 0) {
+              countMap.set(item, countMap.get(item) - 1);
+              return true;
+          }
+          return false;
+      });
+  }
+
 	function substr(str, start, end) {
   		return str.substring(start, end); // Correctly uses substring on string elements
 	}
@@ -202,7 +211,7 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	
 	
 	
-	// Pair 4 
+  // Pair 4 
 	let required_statements = remove(all_statements, used_profiles);
 	let profile_counts = used_profiles.reduce((acc, curr) => {
 	  acc[curr] = (acc[curr] || 0) + 1;
@@ -218,12 +227,11 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	if (comparisons[3] == "same") {
 	  // only keep prefixes that appear twice (to allow both A and B)
 	  let available_prefixes = available_statements.map(item => substr(item, 0, 1));
-	  available_prefixes = Object.keys(
-		available_prefixes.reduce((acc, prefix) => {
-		  acc[prefix] = (acc[prefix] || 0) + 1;
-		  return acc;
-		}, {})
-	  ).filter(prefix => available_prefixes.filter(p => p === prefix).length > 1);
+	  let prefix_counts = available_prefixes.reduce((acc, prefix) => {
+		acc[prefix] = (acc[prefix] || 0) + 1;
+		return acc;
+	  }, {});
+	  available_prefixes = Object.keys(prefix_counts).filter(prefix => prefix_counts[prefix] > 1);
 
 	  // Filter to required prefixes if any required statements are left AND those prefixes were not used in the previous pair
 	  let required_prefixes = required_statements.map(item => substr(item, 0, 1));
@@ -237,7 +245,7 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	  }
 
 	  let chosen_prefix = sample(available_prefixes);
-	  let chosen_statements = [chosen_prefix + "_A", chosen_prefix + "_B"]; // TODO RANDOMIZE THIS ORDER SO IT IS NOT ALWAYS A,B
+	  let chosen_statements = shuffle([chosen_prefix + "_A", chosen_prefix + "_B"]);
 	  candidate_4_1 = chosen_statements[0];
 	  candidate_4_2 = chosen_statements[1];
 
@@ -245,15 +253,16 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	} else {
 	  let pool = intersect(required_statements, available_statements);
 	  if (comparisons[4] == "same") {
-  		let pool_prefixes = pool.map(item => substr(item, 0, 1));
-  		let prefix_pairs = Object.keys(pool_prefixes).filter(prefix =>
-  		  pool_prefixes.filter(p => p === prefix).length > 1
-  		);
-  		let eliminate_statements = prefix_pairs.flatMap(prefix =>
-  		  [prefix + "_A", prefix + "_B"]
-  		);
-  		pool = remove(pool, eliminate_statements);
-  		available_statements = remove(available_statements, eliminate_statements);
+		let pool_prefixes = pool.map(item => substr(item, 0, 1));
+		let prefix_count_map = new Map();
+		pool_prefixes.forEach(prefix => prefix_count_map.set(prefix, (prefix_count_map.get(prefix) || 0) + 1));
+		let prefix_pairs = Array.from(prefix_count_map.entries())
+		  .filter(([_, count]) => count > 1)
+		  .map(([prefix]) => prefix);
+
+		let eliminate_statements = prefix_pairs.flatMap(prefix => [prefix + "_A", prefix + "_B"]);
+		pool = remove(pool, eliminate_statements);
+		available_statements = remove(available_statements, eliminate_statements);
 	  }
 
 	  if (pool.length > 0) {
@@ -270,15 +279,16 @@ Qualtrics.SurveyEngine.addOnload(function() {
 
 	  let pool2 = intersect(remaining_options, required_statements);
 	  if (comparisons[4] == "same") {
-  		let pool2_prefixes = pool2.map(item => substr(item, 0, 1));
-  		let prefix_pairs = Object.keys(pool2_prefixes).filter(prefix =>
-  		  pool2_prefixes.filter(p => p === prefix).length > 1
-  		);
-  		let eliminate_statements = prefix_pairs.flatMap(prefix =>
-  		  [prefix + "_A", prefix + "_B"]
-  		);
-  		pool2 = remove(pool2, eliminate_statements);
-  		remaining_options = remove(remaining_options, eliminate_statements);
+		let pool2_prefixes = pool2.map(item => substr(item, 0, 1));
+		let prefix_count_map2 = new Map();
+		pool2_prefixes.forEach(prefix => prefix_count_map2.set(prefix, (prefix_count_map2.get(prefix) || 0) + 1));
+		let prefix_pairs2 = Array.from(prefix_count_map2.entries())
+		  .filter(([_, count]) => count > 1)
+		  .map(([prefix]) => prefix);
+
+		let eliminate_statements = prefix_pairs2.flatMap(prefix => [prefix + "_A", prefix + "_B"]);
+		pool2 = remove(pool2, eliminate_statements);
+		remaining_options = remove(remaining_options, eliminate_statements);
 	  }
 
 	  if (pool2.length > 0) {
@@ -286,7 +296,6 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	  } else {
 		candidate_4_2 = sample(remaining_options);
 	  }
-
 	  console.log("Candidate 4 (different):", candidate_4_1, candidate_4_2);
 	}
 	
