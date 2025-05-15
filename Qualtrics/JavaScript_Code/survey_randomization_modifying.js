@@ -140,6 +140,10 @@ Qualtrics.SurveyEngine.addOnload(function() {
         // Add to used profiles
         used_profiles.push(candidate_1_1, candidate_1_2);
     }
+    // Randomly swap candidate_1_1 and candidate_1_2
+    if (Math.random() < 0.5) {
+      [candidate_1_1, candidate_1_2] = [candidate_1_2, candidate_1_1];
+    }
 	
 	// ** Pair 2 Logic **
     let remaining_pool = remove(all_statements, used_profiles);  // Remove used profiles from the pool
@@ -169,6 +173,10 @@ Qualtrics.SurveyEngine.addOnload(function() {
 
         console.log("Candidate 2_1 and Candidate 2_2 (different):", candidate_2_1, candidate_2_2);
         used_profiles.push(candidate_2_1, candidate_2_2);
+    }
+    // Randomly swap candidate_2_1 and candidate_2_2
+    if (Math.random() < 0.5) {
+      [candidate_2_1, candidate_2_2] = [candidate_2_2, candidate_2_1];
     }
 	
 	// ** Pair 3 Logic **
@@ -208,7 +216,10 @@ Qualtrics.SurveyEngine.addOnload(function() {
         console.log("Candidate 3_1 and Candidate 3_2 (different):", candidate_3_1, candidate_3_2);
         used_profiles.push(candidate_3_1, candidate_3_2);
     }
-	
+    // Randomly swap candidate_3_1 and candidate_3_2
+    if (Math.random() < 0.5) {
+      [candidate_3_1, candidate_3_2] = [candidate_3_2, candidate_3_1];
+    }
 	
 	
   // Pair 4 
@@ -300,7 +311,11 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	}
 	
 	used_profiles = used_profiles.concat([candidate_4_1, candidate_4_2]);
-	
+	// Randomly swap candidate_4_1 and candidate_4_2
+  if (Math.random() < 0.5) {
+    [candidate_4_1, candidate_4_2] = [candidate_4_2, candidate_4_1];
+  }
+
 	
   // PAIR 5
 	try {
@@ -357,6 +372,10 @@ Qualtrics.SurveyEngine.addOnload(function() {
 
 		// Update used profiles
 		used_profiles = used_profiles.concat([candidate_5_1, candidate_5_2]);
+		// Randomly swap candidate_5_1 and candidate_5_2
+    if (Math.random() < 0.5) {
+      [candidate_5_1, candidate_5_2] = [candidate_5_2, candidate_5_1];
+    }
 
 	} catch (error) {
 		console.log("catch secction for Pair 5")
@@ -365,6 +384,7 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	}
 	console.log("Chosen candidate_5_1:", candidate_5_1);
 	console.log("Chosen candidate_5_2:", candidate_5_2);
+	
 	
 	 // reversing candidate order in scenarios that started with different/different/*
 	if (mark_reverse) {

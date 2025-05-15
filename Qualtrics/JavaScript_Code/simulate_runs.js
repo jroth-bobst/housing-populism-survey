@@ -21,7 +21,7 @@ global.Qualtrics = {
 };
 
 // Load the Qualtrics script in a virtual context
-const scriptCode = fs.readFileSync('./survey_randomization_modifying.js', 'utf8');
+const scriptCode = fs.readFileSync('./survey_randomization.js', 'utf8');
 vm.runInThisContext(scriptCode); // This sets global.onloadCallback
 
 // Run the simulation loop

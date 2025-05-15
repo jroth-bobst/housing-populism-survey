@@ -60,7 +60,6 @@ Qualtrics.SurveyEngine.addOnload(function() {
 		return map[prefix] + "_" + suffix;
 	}
 
-
     // Assign comparisons: 2 or 3 "same", rest "different"
     let n_same = Math.random() < 0.5 ? 2 : 3;
     let n_different = 5 - n_same;
@@ -68,24 +67,18 @@ Qualtrics.SurveyEngine.addOnload(function() {
         Array(n_same).fill("same").concat(Array(n_different).fill("different"))
     );
 
-    // Log comparisons to check the assignment
-    console.log("Comparisons:", comparisons);
-	
-	// for the five scenarios starting with different/different, it was easier to code the constraints for the reverse scenario (i.e. ending with different/different)
-	// so we can just reverse the comparison order, run the code we have, then reverse the pairs at the end. it should still be stored under name_one_combination, though, so we do the change after defining name_one_combination
+	// For the five scenarios starting with different/different, it was easier to code the constraints for the reverse scenario (i.e. ending with different/different)
+	// So we can just reverse the comparison order, run the code we have, then reverse the pairs at the end. it should still be stored under name_one_combination, though, so we do the change after defining name_one_combination
 	let orig_comparisons;
 	if (comparisons[0] === "different" && comparisons[1] === "different") {
 	  mark_reverse = true;
-	  console.log("reversing order of comparisons vector");
+//	  console.log("reversing order of comparisons vector");
 	  orig_comparisons = [...comparisons]; // save original
 	  comparisons = [...comparisons].reverse();
 	}
 
     // Define all possible statements (for this example)
     let all_statements = ["P_A", "P_B", "R_A", "R_B", "M_A", "M_B", "T_A", "T_B"];
-
-    // Log all_statements to check its content
-    console.log("All Statements:", all_statements);
 
     // Function to extract the prefix from a statement (P, R, M, T)
     function getPrefix(profile) {
@@ -101,12 +94,8 @@ Qualtrics.SurveyEngine.addOnload(function() {
     let used_profiles = [];
 
     // ** Pair 1 Logic **
-
     // Step 1: Choose candidate 1 for Pair 1
     let candidate_1_1 = sample(all_statements);
-
-    // Log candidate_1_1 to verify it's being selected correctly
-    console.log("Candidate 1_1:", candidate_1_1);
 
     // Step 2: If comparison is "same", choose the counterpart from the same party but different suffix
     let candidate_1_2; // Declare candidate_1_2 here to ensure it's defined before use
@@ -124,9 +113,6 @@ Qualtrics.SurveyEngine.addOnload(function() {
             candidate_1_2 = prefix + "_" + (opposite_suffix === "A" ? "B" : "A");
         }
 
-        // Log candidate_1_2 for debugging
-        console.log("Candidate 1_2 (same):", candidate_1_2);
-
         // Add to used profiles
         used_profiles.push(candidate_1_1, candidate_1_2);
     } else { // If comparison is "different", select from remaining statements excluding the same prefix
@@ -134,11 +120,12 @@ Qualtrics.SurveyEngine.addOnload(function() {
         let remaining_options = remove(all_statements.filter(x => getPrefix(x) !== prefix_1), used_profiles);
         candidate_1_2 = sample(remaining_options);
 
-        // Log candidate_1_2 for debugging
-        console.log("Candidate 1_2 (different):", candidate_1_2);
-
         // Add to used profiles
         used_profiles.push(candidate_1_1, candidate_1_2);
+    }
+    // Randomly swap candidate_1_1 and candidate_1_2
+    if (Math.random() < 0.5) {
+      [candidate_1_1, candidate_1_2] = [candidate_1_2, candidate_1_1];
     }
 	
 	// ** Pair 2 Logic **
@@ -156,7 +143,6 @@ Qualtrics.SurveyEngine.addOnload(function() {
         candidate_2_1 = chosen_prefix + "_A";
         candidate_2_2 = chosen_prefix + "_B";
 
-        console.log("Candidate 2_1 and Candidate 2_2 (same):", candidate_2_1, candidate_2_2);
         used_profiles.push(candidate_2_1, candidate_2_2);
     } else {
         // If comparison is "different", choose randomly from remaining pool
@@ -167,8 +153,11 @@ Qualtrics.SurveyEngine.addOnload(function() {
         let remaining_options = remove(remaining_pool.filter(x => getPrefix(x) !== prefix_2), candidate_2_1);
         candidate_2_2 = sample(remaining_options);
 
-        console.log("Candidate 2_1 and Candidate 2_2 (different):", candidate_2_1, candidate_2_2);
         used_profiles.push(candidate_2_1, candidate_2_2);
+    }
+    // Randomly swap candidate_2_1 and candidate_2_2
+    if (Math.random() < 0.5) {
+      [candidate_2_1, candidate_2_2] = [candidate_2_2, candidate_2_1];
     }
 	
 	// ** Pair 3 Logic **
@@ -194,7 +183,6 @@ Qualtrics.SurveyEngine.addOnload(function() {
         candidate_3_1 = chosen_prefix + "_A";
         candidate_3_2 = chosen_prefix + "_B";
 
-        console.log("Candidate 3_1 and Candidate 3_2 (same):", candidate_3_1, candidate_3_2);
         used_profiles.push(candidate_3_1, candidate_3_2);
     } else {
         // If comparison is "different", choose profiles from the remaining pool
@@ -205,10 +193,12 @@ Qualtrics.SurveyEngine.addOnload(function() {
         let remaining_options = remove(remaining_pool.filter(x => getPrefix(x) !== prefix_3), candidate_3_1);
         candidate_3_2 = sample(remaining_options);
 
-        console.log("Candidate 3_1 and Candidate 3_2 (different):", candidate_3_1, candidate_3_2);
         used_profiles.push(candidate_3_1, candidate_3_2);
     }
-	
+    // Randomly swap candidate_3_1 and candidate_3_2
+    if (Math.random() < 0.5) {
+      [candidate_3_1, candidate_3_2] = [candidate_3_2, candidate_3_1];
+    }
 	
 	
   // Pair 4 
@@ -249,7 +239,6 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	  candidate_4_1 = chosen_statements[0];
 	  candidate_4_2 = chosen_statements[1];
 
-	  console.log("Candidate 4 (same):", candidate_4_1, candidate_4_2);
 	} else {
 	  let pool = intersect(required_statements, available_statements);
 	  if (comparisons[4] == "same") {
@@ -296,11 +285,14 @@ Qualtrics.SurveyEngine.addOnload(function() {
 	  } else {
 		candidate_4_2 = sample(remaining_options);
 	  }
-	  console.log("Candidate 4 (different):", candidate_4_1, candidate_4_2);
 	}
 	
 	used_profiles = used_profiles.concat([candidate_4_1, candidate_4_2]);
-	
+	// Randomly swap candidate_4_1 and candidate_4_2
+  if (Math.random() < 0.5) {
+    [candidate_4_1, candidate_4_2] = [candidate_4_2, candidate_4_1];
+  }
+
 	
   // PAIR 5
 	try {
@@ -357,14 +349,16 @@ Qualtrics.SurveyEngine.addOnload(function() {
 
 		// Update used profiles
 		used_profiles = used_profiles.concat([candidate_5_1, candidate_5_2]);
+		// Randomly swap candidate_5_1 and candidate_5_2
+    if (Math.random() < 0.5) {
+      [candidate_5_1, candidate_5_2] = [candidate_5_2, candidate_5_1];
+    }
 
 	} catch (error) {
-		console.log("catch secction for Pair 5")
+		console.log("catch section for Pair 5")
 		console.error("Error in Pair 5 logic:", error);
 		console.trace();  
 	}
-	console.log("Chosen candidate_5_1:", candidate_5_1);
-	console.log("Chosen candidate_5_2:", candidate_5_2);
 	
 	 // reversing candidate order in scenarios that started with different/different/*
 	if (mark_reverse) {
@@ -452,7 +446,7 @@ Qualtrics.SurveyEngine.addOnload(function() {
   var fullTextC5_2 = Qualtrics.SurveyEngine.getEmbeddedData(full_candidate_5_2 + "_Text");
 
   // Store the full text in embedded data
-  Qualtrics.SurveyEngine.setEmbeddedData("comparison", comparisons); // just for debugging step
+  Qualtrics.SurveyEngine.setEmbeddedData("comparison", comparisons); 
   Qualtrics.SurveyEngine.setEmbeddedData("FullTextC1_1", fullTextC1_1);
   Qualtrics.SurveyEngine.setEmbeddedData("FullTextC1_2", fullTextC1_2);
   Qualtrics.SurveyEngine.setEmbeddedData("FullTextC2_1", fullTextC2_1);
@@ -471,7 +465,4 @@ Qualtrics.SurveyEngine.addOnload(function() {
   console.log('Candidate 3: ', candidate_3_1, candidate_3_2, 'Parties: ', party_3_1, party_3_2);
   console.log('Candidate 4: ', candidate_4_1, candidate_4_2, 'Parties: ', party_4_1, party_4_2);
   console.log('Candidate 5: ', candidate_5_1, candidate_5_2, 'Parties: ', party_5_1, party_5_2);
-  
-  console.log("Done with script")
-	
 });
