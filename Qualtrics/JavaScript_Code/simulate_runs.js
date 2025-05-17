@@ -2,7 +2,7 @@ const fs = require('fs');
 const vm = require('vm');
 
 // Number of simulations
-const n_sim = 20000;
+const n_sim = 1000000;
 const results = [];
 
 // Fake Qualtrics object with embeddedData storage

@@ -3,3 +3,4 @@
 !Qualtrics/
 !Qualtrics/**
 .Rproj.user
+*.json

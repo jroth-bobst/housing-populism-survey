@@ -1,0 +1,12 @@
+"combination","mean_n_profile","mean_n_profile_twice","mean_n_profile_more_than_twice","mean_n_repeated_in_consecutive","mean_n_matching_rows","mean_P_A","mean_P_B","mean_R_A","mean_R_B","mean_M_A","mean_M_B","mean_T_A","mean_T_B"
+"different_position, same_position, same_position, same_position, different_position",8,2,0,0,3,1.21,1.24,1.24,1.25,1.27,1.26,1.24,1.27
+"same_position, different_position, different_position, different_position, same_position",8,2,0,0,2,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, different_position, different_position, same_position, different_position",8,2,0,0,2,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, different_position, different_position, same_position, same_position",8,2,0,0,3,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, different_position, same_position, different_position, different_position",8,2,0,0,2,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, different_position, same_position, different_position, same_position",8,2,0,0,3,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, different_position, same_position, same_position, different_position",8,2,0,0,3,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, same_position, different_position, different_position, different_position",8,2,0,0,2,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, same_position, different_position, different_position, same_position",8,2,0,0,3,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, same_position, different_position, same_position, different_position",8,2,0,0,3,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
+"same_position, same_position, same_position, different_position, different_position",8,2,0,0,3,1.25,1.25,1.25,1.25,1.25,1.25,1.25,1.25
